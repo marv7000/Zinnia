@@ -1,0 +1,19 @@
+# IDE Files
+.vscode/
+.idea/
+*.code-workspace
+.cache/
+
+# Allow VS Code debug config
+!.vscode/launch.json
+
+# Build dirs
+build*/
+
+# Quilt files
+.pc/
+
+# xbstrap files
+.xbstrap/
+*.xbstrap
+ports/

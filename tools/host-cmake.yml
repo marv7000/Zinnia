@@ -1,0 +1,27 @@
+sources:
+- name: "cmake"
+  subdir: "ports"
+  git: "https://gitlab.kitware.com/cmake/cmake.git"
+  tag: "v4.2.3"
+  version: "4.2.3"
+
+tools:
+- name: host-cmake
+  architecture: noarch
+  from_source: cmake
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/bootstrap"
+    - "--prefix=@PREFIX@"
+    - "--parallel=@PARALLELISM@"
+  compile:
+  - args: [ "make", "-j@PARALLELISM@" ]
+  install:
+  - args: [ "make", "install" ]
+  - args: [ "ln", "-sf", "@SOURCE_ROOT@/support/cmake/Zinnia.cmake", "@PREFIX@/share/cmake-4.2/Modules/Platform/Zinnia.cmake" ]
+  - args: |
+      envsubst '$ARCH $TRIPLE $SYSROOT' < "@SOURCE_ROOT@/support/cmake/CMakeToolchain.txt" > "@PREFIX@/CMakeToolchain.txt"
+    environ:
+      ARCH: "@OPTION:arch@"
+      TRIPLE: "@OPTION:triple@"
+      SYSROOT: "@SYSROOT_DIR@"

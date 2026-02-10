@@ -1,0 +1,16 @@
+diff --git libdrm-clean/xf86drm.h libdrm-workdir/xf86drm.h
+index 6d91dfb..26bd470 100644
+--- libdrm-clean/xf86drm.h
++++ libdrm-workdir/xf86drm.h
+@@ -81,6 +81,11 @@ extern "C" {
+ #define DRM_PRIMARY_MINOR_NAME  "drm"
+ #define DRM_CONTROL_MINOR_NAME  "drmC" /* deprecated */
+ #define DRM_RENDER_MINOR_NAME   "drmR"
++#elif defined(__zinnia__)
++#define DRM_DIR_NAME  "/dev"
++#define DRM_PRIMARY_MINOR_NAME  "drmcard"
++#define DRM_CONTROL_MINOR_NAME  "drmctrl" /* deprecated */
++#define DRM_RENDER_MINOR_NAME   "drmrender"
+ #else
+ #define DRM_DIR_NAME  "/dev/dri"
+ #define DRM_PRIMARY_MINOR_NAME  "card"

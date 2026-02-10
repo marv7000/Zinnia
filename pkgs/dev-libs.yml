@@ -1,0 +1,287 @@
+sources:
+- name: mlibc
+  subdir: ports
+  git: "https://github.com/managarm/mlibc.git"
+  branch: "master"
+  commit: "f320f115bc4928dfec4ca3100596765d72eed0b3"
+  rolling_version: true
+  version: "0.0pl@ROLLING_ID@"
+
+packages:
+- name: mlibc-headers
+  architecture: "noarch"
+  from_source: mlibc
+  revision: 1
+  tools_required:
+  - host-meson
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+
+    - "-Dheaders_only=true"
+
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: mlibc
+  architecture: "@OPTION:arch@"
+  from_source: mlibc
+  revision: 1
+  tools_required:
+  - host-gcc-bootstrap
+  - host-pkgconf
+  pkgs_required:
+  - mlibc-headers
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+    - "--libdir=lib"
+
+    - "-Dno_headers=true"
+    - "-Ddefault_library=both"
+
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: zstd
+  architecture: "@OPTION:arch@"
+  source:
+    subdir: ports
+    url: "https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz"
+    checksum: "blake2b:fe17cf0950f8ee2cc07bfa2b41e97f36a1832e396386cb94a55bede975dc974920578cf147b39eecbc5b53ff06fe0dc1fe781a4cab9bc9f767ea28c0e786422e"
+    format: "tar.gz"
+    version: "1.5.6"
+  revision: 1
+  tools_required:
+  - host-cmake
+  - host-pkgconf
+  - host-gcc
+  pkgs_required:
+  - mlibc
+  configure:
+  - args:
+    - "cmake"
+    - "-DCMAKE_TOOLCHAIN_FILE=@SOURCE_ROOT@/support/CMakeToolchain-@OPTION:arch@.txt"
+    - "-DCMAKE_BUILD_TYPE=Debug"
+    - "-DCMAKE_INSTALL_PREFIX=/usr"
+    - "-DZSTD_ZLIB_SUPPORT=ON"
+    - "-DZSTD_LZMA_SUPPORT=ON"
+    - "-DZSTD_LZ4_SUPPORT=ON"
+    - "-DZSTD_BUILD_CONTRIB=OFF"
+    - "-DZSTD_BUILD_STATIC=OFF"
+    - "-DZSTD_BUILD_TESTS=OFF"
+    - "-DZSTD_PROGRAMS_LINK_SHARED=ON"
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "make", "-j@PARALLELISM@" ]
+  - args: [ "make", "-j@PARALLELISM@", "install" ]
+
+- name: mpfr
+  architecture: "@OPTION:arch@"
+  source:
+    subdir: "ports"
+    url: "https://www.mpfr.org/mpfr-4.1.0/mpfr-4.1.0.tar.xz"
+    format: "tar.xz"
+    checksum: "blake2b:41d1be0c4b557760f12a4525ad3a84b6e2cd6f0927c935fcfba577ac0490e582d1ae4b581dce58e21e705cf9d7c88373054d7fb7a94bb32c69b339f99a25dc68"
+    extract_path: "mpfr-4.1.0"
+    version: "4.1.0"
+    tools_required:
+    - host-autoconf
+    - host-autoconf-archive
+    - host-automake
+    - host-libtool
+    regenerate:
+    - args: [ "autoreconf", "-fvi" ]
+  revision: 1
+  tools_required:
+  - host-gcc
+  pkgs_required:
+  - mlibc
+  - gmp
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/configure"
+    - "--host=@OPTION:arch@-@OPTION:triple@"
+    - "--prefix=/usr"
+    environ:
+      # MPFR's configuration script misdetects cross-compilations.
+      user_redefine_cc: "yes"
+  build:
+  - args: [ "make", "-j@PARALLELISM@" ]
+  - args: [ "make", "-j@PARALLELISM@", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: mpc
+  architecture: "@OPTION:arch@"
+  source:
+    subdir: "ports"
+    url: "https://ftp.gnu.org/gnu/mpc/mpc-1.3.1.tar.gz"
+    format: "tar.gz"
+    checksum: "blake2b:76434e6f8830af3571836d51576bfebbc9701e9bbb5c4686f134081cd96cd90ae02f7ff42bf9e3957c7a7ba92b6b2d9cdabe18f0269271147521cd7f6a2d551c"
+    extract_path: "mpc-1.3.1"
+    version: "1.3.1"
+    tools_required:
+    - host-autoconf
+    - host-automake
+    - host-libtool
+    regenerate:
+    - args: [ "autoreconf", "-fvi" ]
+  revision: 1
+  tools_required:
+  - host-gcc
+  pkgs_required:
+  - mlibc
+  - gmp
+  - mpfr
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/configure"
+    - "--host=@OPTION:arch@-@OPTION:triple@"
+    - "--prefix=/usr"
+  build:
+  - args: [ "make", "-j@PARALLELISM@" ]
+  - args: [ "make", "-j@PARALLELISM@", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: gmp
+  architecture: "@OPTION:arch@"
+  source:
+    subdir: "ports"
+    url: "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+    format: "tar.xz"
+    checksum: "blake2b:a865129e2b3f634ec5bad7f97ed89532e43f5662ac47a7d8ab7f0df8c9f8d0886bd984651422e2573c2163bca69c0547c248147ec90880accbd53db97dc0ddee"
+    extract_path: "gmp-6.3.0"
+    version: "6.3.0"
+    tools_required:
+    - host-autoconf
+    - host-automake
+    - host-libtool
+    regenerate:
+    - args: [ "autoreconf", "-fvi" ]
+    - args: [ "cp", "@THIS_SOURCE_DIR@/configfsf.guess", "@THIS_SOURCE_DIR@/config.guess" ]
+  revision: 1
+  tools_required:
+  - host-gcc
+  pkgs_required:
+  - mlibc
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/configure"
+    - "--host=@OPTION:arch@-@OPTION:triple@"
+    - "--prefix=/usr"
+    - "--enable-cxx"
+  build:
+  - args: [ "make", "-j@PARALLELISM@" ]
+  - args: [ "make", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: libdrm
+  architecture: "@OPTION:arch@"
+  source:
+    subdir: "ports"
+    url: "https://dri.freedesktop.org/libdrm/libdrm-2.4.124.tar.xz"
+    checksum: "blake2b:b463dfb78168c9c94d7dd7e241a233f6500bc6ef00487daf81b936975a3d4f056cc83a764aee6de7200f5804e3aa05c0b2d3fb7e10ada5e1bc414d9a8f120f2c"
+    format: "tar.xz"
+    patch-path-strip: 1
+    extract_path: "libdrm-2.4.124"
+    version: "2.4.124"
+  tools_required:
+  - host-gcc
+  - host-meson
+  pkgs_required:
+  - mlibc
+  revision: 1
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+    - "--libdir=lib"
+    - "--buildtype=debugoptimized"
+
+    - "-Dudev=false"
+    - "-Detnaviv=disabled"
+    - "-Dfreedreno=disabled"
+    - "-Dvc4=disabled"
+    - "-Dvalgrind=disabled"
+    - "-Dtests=false"
+
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+    quiet: true
+
+- name: mesa
+  # TODO: Needs libdrm, wayland, etc
+  labels: [ broken ]
+  architecture: "@OPTION:arch@"
+  source:
+    version: "25.3.0"
+    subdir: "ports"
+    url: "https://archive.mesa3d.org/mesa-25.3.0.tar.xz"
+    checksum: "blake2b:54cd99f9a4f14bf070f5525a91a776f0b7042ce7c056bf8db388baa5c98e0065799cdc376c0c42205b08eff18f252b6e7be5987e44fb628b97a360a7e89c300f"
+    patch-path-strip: 1
+  tools_required:
+  - host-gcc
+  - host-meson
+  pkgs_required:
+  - mlibc
+  - libdrm
+  - llvm
+  - wayland
+  - wayland-protocols
+  - zlib
+  - libglvnd
+  - libexpat
+  - zstd
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+    - "-Db_ndebug=true"
+    - "-Dbuild-tests=false"
+    - "-Dplatforms=x11"
+    - "-Dexpat=enabled"
+    - "-Dgbm=enabled"
+    - "-Dgles1=enabled"
+    - "-Dgles2=enabled"
+    - "-Dglvnd=enabled"
+    - "-Degl=enabled"
+    - "-Dllvm=enabled"
+    - "-Dzstd=enabled"
+    - "-Dvideo-codecs=all_free"
+    - "-Dvulkan-drivers=\"\""
+    - "-Dgallium-drivers=softpipe,llvmpipe"
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"

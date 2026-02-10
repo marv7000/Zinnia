@@ -1,0 +1,18 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug x86_64",
+			"targetCreateCommands": [
+				"settings set target.source-map /var/bootstrap-menix/src/zinnia ${workspaceFolder}/zinnia",
+				"target create ${workspaceFolder}/build-x86_64/pkg-builds/zinnia/kernel/zinnia",
+
+			],
+			"processCreateCommands": [
+				"gdb-remote localhost:1234"
+			]
+		}
+	]
+}

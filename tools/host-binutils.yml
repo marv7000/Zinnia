@@ -1,0 +1,54 @@
+sources:
+- name: binutils
+  subdir: ports
+  url: "https://ftpmirror.gnu.org/gnu/binutils/binutils-with-gold-2.44.tar.xz"
+  format: "tar.xz"
+  checksum: "blake2b:d749d5fbab2d6c2455bf9a988daa5c5ab9ecd9ecd63e4be022bc06483ebc996588c515ee4b931ff2ba7bcf43242068c0747e1cad50740523b2073df5a338614f"
+  version: "2.44"
+  extract_path: "binutils-with-gold-2.44"
+  patch-path-strip: 1
+  tools_required:
+  - host-autoconf-2.69
+  - host-automake
+  - host-libtool
+  regenerate:
+  - args: [ "autoreconf", "-fvi", "-Iconfig" ]
+  - args: [ "cp", "-pv", "@BUILD_ROOT@/tools/host-libtool/share/libtool/build-aux/config.sub", "." ]
+  - args: [ "cp", "-pv", "@BUILD_ROOT@/tools/host-libtool/share/libtool/build-aux/config.guess", "." ]
+  - args: [ "cp", "-pv", "@BUILD_ROOT@/tools/host-libtool/share/libtool/build-aux/config.sub", "libiberty/" ]
+  - args: [ "cp", "-pv", "@BUILD_ROOT@/tools/host-libtool/share/libtool/build-aux/config.guess", "libiberty/" ]
+  - args: [ "cp", "-pv", "@BUILD_ROOT@/tools/host-libtool/share/libtool/build-aux/install-sh", "libiberty/" ]
+
+tools:
+- name: host-binutils
+  architecture: "@OPTION:arch@"
+  from_source: binutils
+  revision: 1
+  tools_required:
+  - host-autoconf-2.69
+  - host-automake
+  - host-libtool
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/configure"
+    - "--target=@OPTION:arch@-@OPTION:triple@"
+    - "--prefix=@PREFIX@"
+    - "--with-bugurl=@OPTION:issue-url@"
+    - "--with-sysroot=@SYSROOT_DIR@"
+    - "--enable-separate-code"
+    - "--enable-cet"
+    - "--enable-default-execstack=no"
+    - "--enable-deterministic-archives"
+    - "--enable-gold"
+    - "--enable-ld=default"
+    - "--enable-new-dtags"
+    - "--enable-plugins"
+    - "--enable-relro"
+    - "--enable-threads"
+    - "--disable-nls"
+    - "--disable-werror"
+    - "--with-pic"
+  compile:
+  - args: [ "make", "-j@PARALLELISM@", "all-binutils", "all-gas", "all-ld" ]
+  install:
+  - args: [ "make", "-j@PARALLELISM@", "install-binutils", "install-gas", "install-ld" ]

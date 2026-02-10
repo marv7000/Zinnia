@@ -1,0 +1,7 @@
+tasks:
+- name: make-initramfs
+  pkgs_required:
+  - base-files
+  args: [ '@SOURCE_ROOT@/tasks/make-initramfs.sh', '@SYSROOT_DIR@', '@SYSROOT_DIR@/boot/initramfs' ]
+  workdir: '@BUILD_ROOT@'
+  containerless: true

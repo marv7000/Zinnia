@@ -1,0 +1,98 @@
+sources:
+- name: gcc
+  subdir: ports
+  url: "https://ftpmirror.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz"
+  format: "tar.xz"
+  checksum: "blake2b:a902ce99db4e93615879e435bcd0b96d5a16ea0af42598ca0e6d12913b2ce3651a98574c3264b2717b848e6b5a823b403ccca0adde463938d5b41aa3f1da0d34"
+  version: "15.1.0"
+  patch-path-strip: 1
+  extract_path: "gcc-15.1.0"
+  tools_required:
+  - host-autoconf-2.69
+  - host-automake
+  - host-libtool
+  regenerate:
+  - args: [ "@SOURCE_ROOT@/support/autoreconf.sh", "-I@THIS_SOURCE_DIR@/config" ]
+
+- name: llvm
+  subdir: "ports"
+  url: "https://github.com/llvm/llvm-project/archive/refs/tags/llvmorg-21.1.6.tar.gz"
+  format: "tar.gz"
+  checksum: "blake2b:cb7a51615be3979e32c0352e3d446ccf54f7338f4a31963d2c35073a96dc2ff5e7e0ba30005cc53fe4f570277bb5be9460ad64063db533dd632f6119d1b04b32"
+  patch-path-strip: 1
+  extract_path: "llvm-project-llvmorg-21.1.6"
+  version: "21.1.6"
+
+packages:
+- name: gcc
+  architecture: "@OPTION:arch@"
+  from_source: gcc
+  revision: 1
+  tools_required:
+  - host-gcc
+  - host-libtool
+  - host-pkgconf
+  pkgs_required:
+  - mlibc
+  - gmp
+  - mpc
+  - mpfr
+  configure:
+  - args:
+    - "@THIS_SOURCE_DIR@/configure"
+    - "--target=@OPTION:arch@-@OPTION:triple@"
+    - "--host=@OPTION:arch@-@OPTION:triple@"
+    - "--prefix=/usr"
+    - "--with-sysroot=/"
+    - "--with-build-sysroot=@SYSROOT_DIR@"
+    - "--enable-languages=c,c++,lto"
+    - "--enable-threads=posix"
+    - "--enable-initfini-array"
+    - "--enable-default-pie"
+    - "--enable-default-ssp"
+    - "--enable-host-shared"
+    - "--disable-nls"
+    - "--disable-multilib"
+    - "--disable-werror"
+    # -g blows up GCC's binary size.
+    - "CFLAGS=-O2"
+    - "CXXFLAGS=-O2"
+  build:
+  - args: [ "make", "-j@PARALLELISM@", "all-gcc" ]
+  - args: [ "make", "-j@PARALLELISM@", "install-gcc" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+  # Create an alias for "cc"
+  - args: [ "ln", "-sf", "gcc", "@THIS_COLLECT_DIR@/usr/bin/cc" ]
+
+- name: llvm
+  architecture: "@OPTION:arch@"
+  from_source: llvm
+  tools_required:
+  - host-cmake
+  - host-gcc
+  pkgs_required:
+  - mlibc
+  revision: 1
+  configure:
+  - args:
+    - "cmake"
+    - "-GNinja"
+    - "-DCMAKE_TOOLCHAIN_FILE=@SOURCE_ROOT@/support/CMakeToolchain-@OPTION:arch@.txt"
+    - "-DCMAKE_INSTALL_PREFIX=/usr"
+    - "-DCMAKE_BUILD_TYPE=Release"
+    - "-DLLVM_LINK_LLVM_DYLIB=ON"
+    - "-DLLVM_ENABLE_RTTI=ON"
+    - "-DLLVM_TARGETS_TO_BUILD=X86;AArch64"
+    - "-DLLVM_TARGET_ARCH=@OPTION:arch@"
+    - "-DLLVM_DEFAULT_TARGET_TRIPLE=@OPTION:arch@-@OPTION:triple@"
+    - "-DLLVM_HOST_TRIPLE=@OPTION:arch@-@OPTION:triple@"
+    - "-DLLVM_ENABLE_TERMINFO=OFF"
+    - "-Wno-dev"
+    - "@THIS_SOURCE_DIR@/llvm"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+    quiet: true
