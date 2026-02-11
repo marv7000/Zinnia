@@ -5,6 +5,10 @@
 #include <zinnia/status.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Virtual memory flags.
 enum zn_vm_flags {
     ZN_VM_READ = 1 << 0,
@@ -22,11 +26,30 @@ enum zn_cache_type {
     ZN_CACHE_MMIO,
 };
 
+#ifndef __KERNEL__
+
 // Allocates memory
-zn_status_t zn_mem_alloc(size_t length, zn_handle_t* out);
+static inline zn_status_t zn_mem_alloc(size_t length, zn_handle_t* out) {
+    return ZN_ERR_UNSUPPORTED;
+}
 
-zn_status_t zn_mem_map(zn_handle_t mem, void* addr, size_t len, enum zn_vm_flags flags);
+static inline zn_status_t zn_mem_map(zn_handle_t mem, void* addr, size_t len, enum zn_vm_flags flags) {
+    return ZN_ERR_UNSUPPORTED;
+}
 
-zn_status_t zn_mem_unmap(zn_handle_t mem, void* addr, size_t len, enum zn_vm_flags flags);
+static inline zn_status_t zn_mem_unmap(zn_handle_t mem, void* addr, size_t len, enum zn_vm_flags flags) {
+    return ZN_ERR_UNSUPPORTED;
+}
+
+// Stores random bytes in a buffer.
+static inline zn_status_t zn_mem_randset(void* addr, size_t len) {
+    return ZN_ERR_UNSUPPORTED;
+}
+
+#endif // !__KERNEL__
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -6,10 +6,4 @@ tools:
     version: "0.0.0"
   install:
   - args: [ "mkdir", "-p", "@PREFIX@" ]
-  - args: |
-      envsubst < @SOURCE_ROOT@/support/meson.cross-file > @PREFIX@/cross.txt
-    environ:
-      ARCH: "@OPTION:arch@"
-      TRIPLE: "@OPTION:triple@"
-      SYSROOT_DIR: "@SYSROOT_DIR@"
-      SOURCE_ROOT: "@SOURCE_ROOT@"
+  - args: [ "cp", "@SOURCE_ROOT@/support/meson-@OPTION:arch@.cross-file", "@PREFIX@/cross.txt" ]

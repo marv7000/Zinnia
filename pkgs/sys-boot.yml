@@ -2,8 +2,8 @@ sources:
 - name: limine
   subdir: "ports"
   git: "https://github.com/limine-bootloader/limine.git"
-  tag: "v10.6.5"
-  version: "10.6.5"
+  tag: "v10.7.0"
+  version: "10.7.0"
   tools_required:
   - host-autoconf
   - host-automake
@@ -12,6 +12,8 @@ sources:
   - args: [ "@SOURCE_ROOT@/support/autoreconf.sh", "-I@THIS_SOURCE_DIR@/config" ]
   - args: [ "./bootstrap" ]
     isolate_network: false
+
+- name: src
 
 packages:
 - name: limine
@@ -40,8 +42,55 @@ packages:
 
 - name: zinnia
   architecture: "@OPTION:arch@"
-  source:
-    name: src
+  from_source: src
+  revision: 1
+  tools_required:
+  - host-meson
+  - host-gcc
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+    - "--libdir=lib"
+    - "-Dbuildtype=debugoptimized"
+    - "-Dbuild_kernel=true"
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: zinnia-headers
+  architecture: "@OPTION:arch@"
+  from_source: src
+  revision: 1
+  tools_required:
+  - host-meson
+  pkgs_required:
+  - mlibc-headers
+  configure:
+  - args:
+    - "meson"
+    - "setup"
+    - "--cross-file"
+    - "@BUILD_ROOT@/tools/host-meson/cross.txt"
+    - "--prefix=/usr"
+    - "--libdir=lib"
+    - "-Dheaders_only=true"
+    - "@THIS_SOURCE_DIR@"
+  build:
+  - args: [ "ninja" ]
+  - args: [ "ninja", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
+
+- name: zinnia-servers
+  architecture: "@OPTION:arch@"
+  from_source: src
   revision: 1
   tools_required:
   - host-meson
@@ -54,10 +103,11 @@ packages:
     - "setup"
     - "--cross-file"
     - "@BUILD_ROOT@/tools/host-meson/cross.txt"
-    - "--bindir=/usr/bin"
-    - "--libdir=/usr/lib"
-    - "--libexecdir=/usr/lib"
-    - "--sbindir=/usr/sbin"
+    - "--prefix=/usr"
+    - "--libdir=lib"
+    - "-Dbuildtype=debugoptimized"
+    - "-Dstrip=true"
+    - "-Dbuild_servers=true"
     - "@THIS_SOURCE_DIR@"
   build:
   - args: [ "ninja" ]

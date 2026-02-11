@@ -1,10 +1,9 @@
 executable(
-    'init',
+    'initd',
     'main.c',
-    # The init process is linked statically because the dynamic loader can't be
-    # read before vfsd is up.
-    c_args: '-static',
+    # The init process is linked statically because the dynamic loader can't be read before posixd is up.
+    link_args: '-static',
     include_directories: common_includes,
-    link_with: libzinnia,
+    link_with: libzinnia.get_static_lib(),
     install: true,
 )

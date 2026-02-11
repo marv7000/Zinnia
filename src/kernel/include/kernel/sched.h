@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kernel/init.h>
+#include <kernel/list.h>
 #include <kernel/mem.h>
 #include <kernel/types.h>
 #include <bits/sched.h>
@@ -18,7 +20,6 @@ enum task_state {
 // A task is the smallest unit of the scheduler.
 struct task {
     size_t id;
-    struct process* process;
     enum task_state state;
     struct arch_context context;
     virt_t kernel_stack;
@@ -27,11 +28,15 @@ struct task {
     int8_t priority;
 };
 
-struct process {};
-
 // Per-CPU data for scheduling.
 struct sched_percpu {
     struct task* current;
+    struct task* idle_task;
+    size_t preempt_level;
+    SLIST_HEAD(struct task*) run_queue;
 };
 
+[[__init]]
 void sched_init();
+
+void sched_reschedule(struct sched_percpu* sched);

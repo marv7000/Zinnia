@@ -1,6 +1,10 @@
 #ifndef ZINNIA_RIGHTS_H
 #define ZINNIA_RIGHTS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     // Can be read from.
     ZN_RIGHT_READ = 1u << 0,
@@ -22,5 +26,9 @@ typedef enum {
     ZN_RIGHTS_COMMON = (ZN_RIGHT_MOVE | ZN_RIGHT_CLONE),
     ZN_RIGHTS_RW = (ZN_RIGHT_READ | ZN_RIGHT_WRITE),
 } zn_rights_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

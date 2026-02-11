@@ -1,10 +1,13 @@
 #ifndef ZINNIA_STATUS_H
 #define ZINNIA_STATUS_H
 
-// Status values that may be returned by the kernel.
-// A status value of 0 means everything is okay.
-// A negative value indicates an error from the kernel.
-// Positive values are available to user processes.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Status values that may be returned by syscalls or other calls.
+// A status value of 0 means no error occured.
+// A negative value indicates a common error, usually from the kernel.
 typedef enum {
     ZN_OK = 0,
     // An internal error occured.
@@ -29,7 +32,8 @@ typedef enum {
     ZN_ERR_BAD_BUFFER = -10,
 } zn_status_t;
 
-// Returns a string describing the error code.
-const char* zn_status_to_string(zn_status_t status);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

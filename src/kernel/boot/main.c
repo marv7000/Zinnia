@@ -23,6 +23,7 @@ void kernel_early_init() {
 void kernel_main(struct boot_info* info) {
     cmdline_parse(info->cmdline);
     console_init();
+
     kprintf("%s\n", zinnia_banner); // Say hello!
     kprintf("Command line: \"%s\"\n", info->cmdline);
 

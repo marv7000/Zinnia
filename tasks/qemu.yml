@@ -12,11 +12,11 @@ tasks:
   - '@PARALLELISM@'
   - '@BUILD_ROOT@/tools/host-ovmf-bin/ovmf-code-@OPTION:arch@.fd'
   - '0'
-  - '0'
+  - '1'
   workdir: '@BUILD_ROOT@'
   containerless: true
 
-- name: qemu-kvm
+- name: qemu-tcg
   tasks_required:
   - task: make-image
     order_only: true
@@ -29,7 +29,7 @@ tasks:
   - '@PARALLELISM@'
   - '@BUILD_ROOT@/tools/host-ovmf-bin/ovmf-code-@OPTION:arch@.fd'
   - '0'
-  - '1'
+  - '0'
   workdir: '@BUILD_ROOT@'
   containerless: true
 

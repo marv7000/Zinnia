@@ -1,0 +1,19 @@
+[binaries]
+c = 'x86_64-zinnia-mlibc-gcc'
+cpp = 'x86_64-zinnia-mlibc-g++'
+ar = 'x86_64-zinnia-mlibc-gcc-ar'
+nm = 'x86_64-zinnia-mlibc-nm'
+objcopy = 'x86_64-zinnia-mlibc-objcopy'
+ranlib = 'x86_64-zinnia-mlibc-ranlib'
+strip = 'x86_64-zinnia-mlibc-strip'
+pkg-config = 'pkgconf'
+llvm-config = '/base_dir/support/llvm-config'
+
+[host_machine]
+system = 'zinnia'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+
+[built-in options]
+libdir = 'lib'

@@ -68,6 +68,7 @@ void kernel_entry() {
     }
 
     if (module_res) {
+        info.files = files;
         info.num_files = MIN(ARRAY_SIZE(files), module_res->module_count);
         for (size_t i = 0; i < info.num_files; i++) {
             files[i].data = module_res->modules[i]->address;

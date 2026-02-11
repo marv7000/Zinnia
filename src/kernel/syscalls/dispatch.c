@@ -12,7 +12,7 @@ zn_status_t syscall_dispatch(reg_t num, reg_t a0, reg_t a1, reg_t a2, reg_t a3, 
         return syscall_log((__user const char*)a0, a1);
     case ZN_SYSCALL_ARCHCTL:
         return syscall_archctl(a0, a1);
+    default:
+        return ZN_ERR_BAD_SYSCALL;
     }
-
-    return ZN_ERR_BAD_SYSCALL;
 }

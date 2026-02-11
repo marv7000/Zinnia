@@ -1,9 +1,9 @@
 sources:
 - name: mlibc
   subdir: ports
-  git: "https://github.com/managarm/mlibc.git"
-  branch: "master"
-  commit: "f320f115bc4928dfec4ca3100596765d72eed0b3"
+  git: "https://github.com/marv7000/mlibc.git"
+  branch: "zinnia"
+  commit: "9fa7bfc6143e30ad2dd33e70b740e1f759d56b60"
   rolling_version: true
   version: "0.0pl@ROLLING_ID@"
 
@@ -21,9 +21,7 @@ packages:
     - "--cross-file"
     - "@BUILD_ROOT@/tools/host-meson/cross.txt"
     - "--prefix=/usr"
-
     - "-Dheaders_only=true"
-
     - "@THIS_SOURCE_DIR@"
   build:
   - args: [ "ninja" ]
@@ -40,6 +38,7 @@ packages:
   - host-pkgconf
   pkgs_required:
   - mlibc-headers
+  - zinnia-headers
   configure:
   - args:
     - "meson"
@@ -48,10 +47,9 @@ packages:
     - "@BUILD_ROOT@/tools/host-meson/cross.txt"
     - "--prefix=/usr"
     - "--libdir=lib"
-
+    - "-Dbuildtype=release"
     - "-Dno_headers=true"
     - "-Ddefault_library=both"
-
     - "@THIS_SOURCE_DIR@"
   build:
   - args: [ "ninja" ]

@@ -1,7 +1,11 @@
 #ifndef ZINNIA_SYSCALL_NUMBERS_H
 #define ZINNIA_SYSCALL_NUMBERS_H
 
-enum {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef enum {
     ZN_SYSCALL_PANIC,
 
     ZN_SYSCALL_LOG,
@@ -22,6 +26,10 @@ enum {
 
     ZN_SYSCALL_THREAD_CREATE,
     ZN_SYSCALL_THREAD_DESTROY,
-};
+} zn_syscall_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

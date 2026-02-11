@@ -14,3 +14,20 @@ void syscall_panic(zn_status_t err);
 zn_status_t syscall_log(__user const char* msg, size_t len);
 
 zn_status_t syscall_archctl(uint32_t op, size_t value);
+
+// Channel
+#include <zinnia/channel.h>
+
+zn_status_t syscall_channel_create(
+    enum zn_channel_flags flags,
+    __user zn_handle_t* endpoint0,
+    __user zn_handle_t* endpoint1
+);
+
+zn_status_t syscall_channel_open(
+    zn_handle_t channel,
+    size_t num_handles,
+    size_t num_bytes,
+    __user zn_handle_t** out_handle_buf,
+    __user void** out_data_buf
+);

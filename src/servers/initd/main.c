@@ -2,6 +2,7 @@
 #include <zinnia/handle.h>
 #include <zinnia/log.h>
 #include <zinnia/status.h>
+#include <libzinnia/status.h>
 
 int main() {
     zn_log("Hello, init world!\n");
@@ -15,5 +16,5 @@ int main() {
         return e;
     }
 
-    return ZN_OK;
+    return 0;
 }
