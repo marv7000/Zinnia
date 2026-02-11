@@ -1,0 +1,27 @@
+diff --git libudev-devd-clean/tree.h libudev-devd-workdir/tree.h
+index 79ac4b5..4ae1595 100644
+--- libudev-devd-clean/tree.h
++++ libudev-devd-workdir/tree.h
+@@ -32,7 +32,9 @@
+ #ifndef	_SYS_TREE_H_
+ #define	_SYS_TREE_H_
+
++#ifndef __zinnia__
+ #include <sys/cdefs.h>
++#endif
+
+ /*
+  * This file defines data structures for different types of trees:
+diff --git libudev-devd-clean/udev-device.c libudev-devd-workdir/udev-device.c
+index da81d1e..edffea1 100644
+--- libudev-devd-clean/udev-device.c
++++ libudev-devd-workdir/udev-device.c
+@@ -25,7 +25,7 @@
+
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#ifdef __linux__
++#if defined(__linux__) || defined(__zinnia__)
+ #include <sys/sysmacros.h>
+ #endif
+
