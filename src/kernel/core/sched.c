@@ -33,17 +33,14 @@ void sched_yield(struct sched_percpu* sched) {
 }
 
 zn_status_t task_create(task_fn_t entry, void* arg, struct task** out) {
-    static size_t last_tid = 1;
-
-    zn_status_t status;
-
     if (!out)
-        return ZN_ERR_BAD_ARG;
+        return ZN_ERR_INVALID;
 
-    struct task* new_task;
-    if ((status = mem_alloc(sizeof(struct task), 0, (void**)&new_task)))
-        return status;
+    struct task* new_task = mem_alloc(sizeof(struct task), 0);
+    if (!new_task)
+        return ZN_ERR_NO_MEMORY;
 
+    static size_t last_tid = 0;
     new_task->id = atomic_fetch_add(&last_tid, 1);
 
     *out = new_task;

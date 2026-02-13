@@ -10,9 +10,11 @@ kernel_sources += files(
     'gdt.c',
     'idt.c',
     'mem.c',
+    'percpu.c',
     'serial.c',
     'smp.c',
     'sys.c',
+    'syscall.c',
     'trampoline.S',
     'usercopy.c',
 )

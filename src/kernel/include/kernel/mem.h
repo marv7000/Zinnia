@@ -82,7 +82,7 @@ extern virt_t mem_hhdm_base;
 // Allocates a region of memory which can be smaller than the page size.
 // Returns `nullptr` if the allocator cannot provide an allocation for the
 // given `length` + `flags`. Always returns `nullptr` if `length` is 0.
-zn_status_t mem_alloc(size_t length, enum alloc_flags flags, void** out);
+void* mem_alloc(size_t length, enum alloc_flags flags);
 
 // Frees an allocation created by `mem_alloc`.
 // Passing `nullptr` is a no-op.
@@ -91,17 +91,17 @@ void mem_free(void* mem);
 zn_status_t mem_phys_alloc(size_t num_pages, enum alloc_flags flags, phys_t* out);
 zn_status_t mem_phys_free(phys_t start, size_t num_pages);
 
-zn_status_t mem_vm_alloc(size_t length, void** out);
-zn_status_t mem_vm_free(void* addr, size_t length);
+void* mem_vm_alloc(size_t length);
+void mem_vm_free(void* addr, size_t length);
+
+void* mem_mmio_new(phys_t addr, size_t length);
+void mem_mmio_free(void* ptr, size_t length);
 
 zn_status_t mem_pt_new_kernel(struct page_table* pt, enum alloc_flags flags);
 zn_status_t mem_pt_new_user(struct page_table* pt, enum alloc_flags flags);
 zn_status_t mem_pt_map(struct page_table* pt, virt_t vaddr, phys_t paddr, enum pte_flags flags, enum cache_mode cache);
 zn_status_t mem_pt_protect(struct page_table* pt, virt_t vaddr, enum pte_flags flags);
 zn_status_t mem_pt_unmap(struct page_table* pt, virt_t vaddr);
-
-zn_status_t mem_mmio_new(phys_t addr, size_t length, void** out);
-zn_status_t mem_mmio_free(phys_t addr, size_t length, void** out);
 
 // Sets a page table on the current processor.
 static inline void mem_pt_set(struct page_table* pt) {

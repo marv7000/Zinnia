@@ -134,6 +134,13 @@
 #define RFLAGS_VIP  (1u << 20)
 #define RFLAGS_ID   (1u << 21)
 
+#define XCR0_X87              (1 << 0)
+#define XCR0_SSE              (1 << 1)
+#define XCR0_AVX              (1 << 2)
+#define XCR0_AXV512_OPMASK    (1 << 5)
+#define XCR0_AVX512_ZMM_HI256 (1 << 6)
+#define XCR0_AVX512_HI16_ZMM  (1 << 7)
+
 #define CR0_PE (1 << 0)
 #define CR0_MP (1 << 1)
 #define CR0_EM (1 << 2)

@@ -43,8 +43,8 @@ void lapic_init(struct local_apic* lapic) {
     if (cpuid.ecx & CPUID_1C_X2APIC)
         apic_msr |= 1 << 10;
     else {
-        zn_status_t s = mem_mmio_new(apic_msr & 0xFFFF'F000, 0x1000, (void**)&lapic->xapic_regs);
-        ASSERT(s == ZN_OK, "Failed to allocate virtual memory!");
+        lapic->xapic_regs = mem_mmio_new(apic_msr & 0xFFFF'F000, 0x1000);
+        ASSERT(lapic->xapic_regs, "Failed to allocate virtual memory!");
     }
 
     asm_wrmsr(0x1B, apic_msr);

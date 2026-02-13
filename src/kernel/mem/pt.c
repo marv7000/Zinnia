@@ -1,3 +1,4 @@
+#include <zinnia/status.h>
 #include <kernel/assert.h>
 #include <kernel/mem.h>
 #include <kernel/print.h>
@@ -24,7 +25,7 @@ zn_status_t mem_pt_new_user(struct page_table* pt, enum alloc_flags flags) {
 // If `check_only` is set, only checks if the PTE exists,
 // and doesn't allocate new levels if they don't already exist.
 // If it can't allocate a page if it has to, returns `nullptr`.
-static zn_status_t get_pte(struct page_table* pt, virt_t vaddr, bool is_user, bool check_only, pte_t** ret) {
+static pte_t* get_pte(struct page_table* pt, virt_t vaddr, bool is_user, bool check_only) {
     pte_t* current_head = HHDM_PTR(pt->root);
     size_t index = 0;
 
@@ -49,28 +50,27 @@ static zn_status_t get_pte(struct page_table* pt, virt_t vaddr, bool is_user, bo
         } else {
             // If the current level isn't present, we can skip the rest.
             if (check_only)
-                return ZN_ERR_NO_MEMORY;
+                return nullptr;
 
             phys_t addr;
-            zn_status_t alloc_status = mem_phys_alloc(1, 0, &addr);
-            if (alloc_status)
-                return alloc_status;
+            if (mem_phys_alloc(1, 0, &addr) != ZN_OK)
+                return nullptr;
 
             *pte = mem_pte_build(addr, level_flags, CACHE_NONE);
             current_head = HHDM_PTR(addr);
         }
     }
 
-    *ret = &current_head[index];
-    return 0;
+    return &current_head[index];
 }
 
 zn_status_t mem_pt_map(struct page_table* pt, virt_t vaddr, phys_t paddr, enum pte_flags flags, enum cache_mode cache) {
     spin_lock(&pt->lock);
 
-    pte_t* pte;
-    zn_status_t status = get_pte(pt, vaddr, flags & PTE_USER, false, &pte);
-    if (status) {
+    zn_status_t status = ZN_OK;
+    pte_t* pte = get_pte(pt, vaddr, flags & PTE_USER, false);
+    if (pte == nullptr) {
+        status = ZN_ERR_NO_MEMORY;
         goto fail;
     }
 

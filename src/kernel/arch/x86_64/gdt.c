@@ -18,13 +18,14 @@ struct gdt main_gdt = {
     .tss = {0x0000890000000000, 0},
 };
 
-void gdt_init() {
+void gdt_load() {
+    struct gdt* gdt = &percpu_get()->arch.gdt;
     // Set initial values.
-    memcpy(&percpu_get()->arch.gdt, &main_gdt, sizeof(struct gdt));
+    memcpy(gdt, &main_gdt, sizeof(struct gdt));
 
     struct gdtr gdtr = {
         .limit = sizeof(struct gdt) - 1,
-        .base = &percpu_get()->arch.gdt,
+        .base = gdt,
     };
 
     asm volatile("lgdt [%0]" ::"r"(&gdtr));

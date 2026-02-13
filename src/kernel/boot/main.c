@@ -15,7 +15,7 @@ static const char zinnia_banner[] =
 
 [[__init]]
 void kernel_early_init() {
-    percpu_bsp_early_init();
+    percpu_bsp_init();
     percpu_get()->online = true;
     irq_lock();
 }
@@ -30,10 +30,12 @@ void kernel_main(struct boot_info* info) {
 
     mem_init(info->mem_map, info->num_mem_maps, info->virt_base, info->phys_base, info->hhdm_base);
 
+    percpu_init();
     sched_init();
 
     irq_unlock();
     sched_reschedule(&percpu_get()->sched);
+    while (1) {}
     ASSERT(false, "Nothing to do!");
 }
 

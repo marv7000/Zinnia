@@ -5,16 +5,15 @@
 
 zn_status_t universe_new(struct universe** out) {
     if (!out)
-        return ZN_ERR_BAD_ARG;
+        return ZN_ERR_INVALID;
 
     struct universe* universe;
-    zn_status_t status;
-    if ((status = mem_alloc(sizeof(struct universe), 0, (void**)&universe)))
-        return status;
+    if (!(universe = mem_alloc(sizeof(struct universe), 0)))
+        return ZN_ERR_NO_MEMORY;
 
     universe->mutex = (struct mutex){0};
     universe->next_handle = 1;
 
     *out = universe;
-    return status;
+    return ZN_OK;
 }

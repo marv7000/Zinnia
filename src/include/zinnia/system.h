@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #ifndef __KERNEL__
+
 #include <zinnia/status.h>
 #include <zinnia/syscall_numbers.h>
 #include <zinnia/syscall_stubs.h>

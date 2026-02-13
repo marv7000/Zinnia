@@ -26,34 +26,45 @@ static inline zn_status_t zn_channel_create(
     return zn_syscall3((zn_arg_t)flags, (zn_arg_t)endpoint0, (zn_arg_t)endpoint1, ZN_SYSCALL_CHANNEL_CREATE);
 }
 
-// Maps the message buffer in the address space and returns its base address.
-// There may only be one message buffer per channel and process.
-static inline zn_status_t zn_channel_open(
+// Notifies the peer that there is new data available.
+// The kernel only copies the first `num_handles` handles and `num_bytes` bytes.
+static inline zn_status_t zn_channel_write(
     zn_handle_t channel,
+    zn_handle_t* handles,
+    void* bytes,
     size_t num_handles,
-    size_t num_bytes,
-    zn_handle_t** out_handle_buf,
-    void** out_data_buf
+    size_t num_bytes
 ) {
     return zn_syscall5(
         (zn_arg_t)channel,
+        (zn_arg_t)handles,
+        (zn_arg_t)bytes,
         (zn_arg_t)num_handles,
         (zn_arg_t)num_bytes,
-        (zn_arg_t)out_handle_buf,
-        (zn_arg_t)out_data_buf,
-        ZN_SYSCALL_CHANNEL_OPEN
+        ZN_SYSCALL_CHANNEL_WRITE
     );
 }
 
-// Notifies the peer that there is new data available.
-// The kernel only copies the first `num_handles` handles and `num_bytes` bytes.
-static inline zn_status_t zn_channel_notify(zn_handle_t channel, size_t num_handles, size_t num_bytes) {
-    return zn_syscall3((zn_arg_t)channel, (zn_arg_t)num_handles, (zn_arg_t)num_bytes, ZN_SYSCALL_CHANNEL_WRITE);
-}
-
-// Waits for a new message to appear in the channel buffer.
-static inline zn_status_t zn_channel_wait(zn_handle_t channel) {
-    return ZN_ERR_UNSUPPORTED;
+// Waits for a new message to appear in the channel.
+static inline zn_status_t zn_channel_read(
+    zn_handle_t channel,
+    zn_handle_t* handles,
+    void* bytes,
+    size_t num_handles,
+    size_t num_bytes,
+    size_t* read_handles,
+    size_t* read_bytes,
+) {
+    return zn_syscall6(
+        (zn_arg_t)channel,
+        (zn_arg_t)handles,
+        (zn_arg_t)bytes,
+        (zn_arg_t)num_handles,
+        (zn_arg_t)num_bytes,
+        (zn_arg_t)read_handles,
+        (zn_arg_t)read_bytes,
+        ZN_SYSCALL_CHANNEL_READ
+    );
 }
 
 #endif // !__KERNEL__

@@ -100,14 +100,13 @@ static inline struct slab* slab_find_size(size_t size) {
     return nullptr;
 }
 
-zn_status_t mem_alloc(size_t size, enum alloc_flags flags, void** out) {
-    if (__unlikely(out == nullptr))
-        return ZN_OK;
+void* mem_alloc(size_t size, enum alloc_flags flags) {
+    if (__unlikely(size == 0))
+        return nullptr;
 
     struct slab* slab = slab_find_size(size);
     if (slab != nullptr) {
-        *out = slab_do_alloc(slab);
-        return ZN_OK;
+        return slab_do_alloc(slab);
     }
 
     size_t num_pages = ROUND_UP(size, mem_page_size());
@@ -115,8 +114,8 @@ zn_status_t mem_alloc(size_t size, enum alloc_flags flags, void** out) {
     // Allocate the pages plus an additional page for metadata.
     phys_t ret;
     zn_status_t status = mem_phys_alloc(num_pages + 1, 0, &ret);
-    if (__unlikely(status))
-        return status;
+    if (__unlikely(status != ZN_OK))
+        return nullptr;
 
     ret = ret + (phys_t)mem_hhdm_addr();
     // Write metadata into the first page.
@@ -124,8 +123,7 @@ zn_status_t mem_alloc(size_t size, enum alloc_flags flags, void** out) {
     info->num_pages = num_pages;
     info->size = size;
     // Skip the first page and return the next one.
-    *out = (void*)(ret + mem_page_size());
-    return ZN_OK;
+    return (void*)(ret + mem_page_size());
 }
 
 void mem_free(void* addr) {

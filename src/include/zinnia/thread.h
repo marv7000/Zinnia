@@ -12,6 +12,7 @@ enum zn_thread_flags {
 };
 
 #ifndef __KERNEL__
+
 #include <zinnia/handle.h>
 #include <zinnia/status.h>
 #include <stdint.h>

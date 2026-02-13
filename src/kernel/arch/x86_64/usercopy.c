@@ -12,8 +12,9 @@ static const struct usercopy_region read_region = {
 };
 
 [[__naked]]
-bool arch_usercopy_read(uint8_t* dst, const __user uint8_t* src, size_t len) {
+bool arch_usercopy_read(void* dst, const __user void* src, size_t len, struct usercopy_region* region) {
     asm volatile(
+        "stac\n"
         // Setup regs for `rep movsb`.
         "xchg rcx, rdx\n"
         "mov rax, [rip + %0]\n"
@@ -28,12 +29,14 @@ bool arch_usercopy_read(uint8_t* dst, const __user uint8_t* src, size_t len) {
         "xor rax, rax\n"
         "mov [rdx], rax\n"
         "mov rax, 1\n"
+        "clac\n"
         "ret\n"
 
         ".global x86_64_read_fault\n"
         "x86_64_read_fault:\n"
         "xor rax, rax\n"
         "mov [rdx], rax\n"
+        "clac\n"
         "ret\n"
         :
         : "i"(&read_region)
@@ -52,8 +55,9 @@ static const struct usercopy_region write_region = {
 };
 
 [[__naked]]
-bool arch_usercopy_write(__user uint8_t* dst, const uint8_t* src, size_t len) {
+bool arch_usercopy_write(__user void* dst, const void* src, size_t len, struct usercopy_region* region) {
     asm volatile(
+        "stac\n"
         // Setup regs for `rep movsb`.
         "xchg rcx, rdx\n"
         "mov rax, [rip + %0]\n"
@@ -68,12 +72,14 @@ bool arch_usercopy_write(__user uint8_t* dst, const uint8_t* src, size_t len) {
         "xor rax, rax\n"
         "mov [rdx], rax\n"
         "mov rax, 1\n"
+        "clac\n"
         "ret\n"
 
         ".global x86_64_write_fault\n"
         "x86_64_write_fault:\n"
         "xor rax, rax\n"
         "mov [rdx], rax\n"
+        "clac\n"
         "ret\n"
         :
         : "i"(&read_region)
@@ -92,8 +98,9 @@ static const struct usercopy_region strlen_region = {
 };
 
 [[__naked]]
-bool arch_usercopy_strlen(const __user uint8_t* str, size_t max, size_t* len) {
+bool arch_usercopy_strlen(const __user char* str, size_t max, size_t* len, struct usercopy_region* region) {
     asm volatile(
+        "stac\n"
         "mov rax, [rip + %0]\n"
         "mov [rcx], rax\n"
 
@@ -114,12 +121,14 @@ bool arch_usercopy_strlen(const __user uint8_t* str, size_t max, size_t* len) {
         "xor rax, rax\n"
         "mov [rcx], rax\n"
         "mov rax, 1\n"
+        "clac\n"
         "ret\n"
 
         ".global x86_64_strlen_fault\n"
         "x86_64_strlen_fault:\n"
         "xor rax, rax\n"
         "mov [rcx], rax\n"
+        "clac\n"
         "ret\n"
         :
         : "i"(&read_region)

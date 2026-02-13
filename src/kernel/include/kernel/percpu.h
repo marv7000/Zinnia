@@ -1,9 +1,10 @@
 #pragma once
 
-#include <bits/percpu.h>
 #include <kernel/compiler.h>
 #include <kernel/irq.h>
 #include <kernel/sched.h>
+#include <kernel/usercopy.h>
+#include <bits/percpu.h>
 #include <stddef.h>
 
 ASSERT_TYPE(struct arch_percpu);
@@ -18,18 +19,26 @@ struct percpu {
     struct arch_percpu arch;   // Architecture-specific fields.
     struct irq_percpu irq;     // IRQ information.
     struct sched_percpu sched; // Scheduler information.
+    struct usercopy_region* usercopy_region;
 };
 
 // Per-CPU data for the bootstrap processor.
 extern struct percpu percpu_bsp;
+
+// Allocates a block of memory for a new CPU.
+struct percpu* percpu_new();
 
 // Gets the per-CPU data on the current CPU.
 static inline struct percpu* percpu_get() {
     return arch_percpu_get();
 }
 
-// Allocates a block of memory for a new CPU.
-struct percpu* percpu_new();
-
 // Initializes the bootstrap processor.
-void percpu_bsp_early_init();
+static inline void percpu_bsp_init() {
+    arch_percpu_bsp_init();
+}
+
+// Initializes all processors.
+static inline void percpu_init() {
+    arch_percpu_init();
+}

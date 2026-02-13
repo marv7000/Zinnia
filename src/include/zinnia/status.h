@@ -21,11 +21,11 @@ typedef enum {
     // Process can not own any more handles.
     ZN_ERR_NO_HANDLES = -5,
     // One or more of the provided arguments is not valid.
-    ZN_ERR_BAD_ARG = -6,
+    ZN_ERR_INVALID = -6,
     // Argument is outside of the range for valid values.
     ZN_ERR_BAD_RANGE = -7,
     // Object handle does not name a valid object or correct type.
-    ZN_ERR_BAD_OBJECT = -8,
+    ZN_ERR_BAD_HANDLE = -8,
     // Object has insufficient permissions for this operation.
     ZN_ERR_BAD_PERMS = -9,
     // Buffer is not large enough or doesn't point to a valid memory region.
@@ -48,12 +48,12 @@ static inline const char* zn_status_to_string(zn_status_t err) {
         return "System does not have enough free memory for this operation (NO_MEMORY)";
     case ZN_ERR_NO_HANDLES:
         return "Process can not own any more handles (NO_HANDLES)";
-    case ZN_ERR_BAD_ARG:
-        return "One or more of the provided arguments is not valid (BAD_ARG)";
+    case ZN_ERR_INVALID:
+        return "One or more of the provided arguments is not valid (INVALID)";
     case ZN_ERR_BAD_RANGE:
         return "Argument is outside of the range for valid values (BAD_RANGE)";
-    case ZN_ERR_BAD_OBJECT:
-        return "Object handle does not name a valid object (BAD_OBJECT)";
+    case ZN_ERR_BAD_HANDLE:
+        return "Object handle does not name a valid object (BAD_HANDLE)";
     case ZN_ERR_BAD_PERMS:
         return "Object has insufficient permissions for this operation (BAD_PERMS)";
     case ZN_ERR_BAD_BUFFER:

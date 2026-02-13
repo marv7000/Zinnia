@@ -10,27 +10,32 @@
 enum universe_desc_type {
     UNIVERSE_DESC_UNIVERSE,
     UNIVERSE_DESC_TASK,
-    UNIVERSE_DESC_ADDRESS_SPACE,
+    UNIVERSE_DESC_VAS,
 };
 
 struct universe_desc {
     enum universe_desc_type type;
 };
 
+// Translates between handles and objects.
+struct universe {
+    size_t next_handle;
+    struct mutex mutex;
+};
+
+struct universe_uni_desc {
+    enum universe_desc_type type;
+    struct universe* universe;
+};
+
 struct universe_channel_desc {
     struct universe_desc desc;
-    struct channel* space;
+    struct channel* channel;
 };
 
 struct universe_vas_desc {
     struct universe_desc desc;
     struct address_space* space;
-};
-
-// Translates between handles and objects.
-struct universe {
-    size_t next_handle;
-    struct mutex mutex;
 };
 
 // Creates a new universe with no contents.

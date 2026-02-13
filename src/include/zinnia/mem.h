@@ -13,23 +13,27 @@ enum zn_vm_flags {
     ZN_VM_MAP_SHARED = 1 << 3,
 };
 
-enum zn_cache_type {
-    // Generic memory
-    ZN_CACHE_NORMAL,
-    // Write combining
-    ZN_CACHE_WC,
-    // Memory-mapped IO
-    ZN_CACHE_MMIO,
-};
-
 #ifndef __KERNEL__
 
 #include <zinnia/handle.h>
 #include <zinnia/status.h>
+#include <zinnia/syscall_numbers.h>
+#include <zinnia/syscall_stubs.h>
 #include <stddef.h>
 
-static inline zn_status_t zn_vas_create() {
+// Creates a new virtual memory object.
+static inline zn_status_t zn_vmo_create(size_t length, zn_handle_t* out) {
     return ZN_ERR_UNSUPPORTED;
+}
+
+// Creates a new virtual memory object which points to a contiguous phyiscal memory region.
+static inline zn_status_t zn_vmo_create_phys(uintptr_t phys_addr, size_t length, zn_handle_t* out) {
+    return ZN_ERR_UNSUPPORTED;
+}
+
+// Creates a new virtual address space.
+static inline zn_status_t zn_vas_create(zn_handle_t* out) {
+    return zn_syscall1((zn_arg_t)out, ZN_SYSCALL_VAS_CREATE);
 }
 
 static inline zn_status_t zn_vas_map(zn_handle_t space, void* addr, size_t len, enum zn_vm_flags flags) {
@@ -41,11 +45,6 @@ static inline zn_status_t zn_vas_protect(zn_handle_t space, void* addr, size_t l
 }
 
 static inline zn_status_t zn_vas_unmap(zn_handle_t space, void* addr, size_t len) {
-    return ZN_ERR_UNSUPPORTED;
-}
-
-// Creates a new virtual memory object.
-static inline zn_status_t zn_vmo_create(size_t length, zn_handle_t* out) {
     return ZN_ERR_UNSUPPORTED;
 }
 

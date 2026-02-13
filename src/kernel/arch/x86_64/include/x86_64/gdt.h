@@ -21,8 +21,10 @@ struct [[__packed]] gdtr {
     struct gdt* base;
 };
 
-// Initializes a GDT on the local core.
-void gdt_init();
+struct percpu;
+
+// Initializes a GDT on the local CPU.
+void gdt_load();
 
 // Sets the Task State Segment in the given GDT.
 void gdt_set_tss(struct gdt* gdt, struct tss* tss);
