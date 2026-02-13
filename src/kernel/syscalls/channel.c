@@ -1,4 +1,5 @@
 #include <zinnia/channel.h>
+#include <zinnia/handle.h>
 #include <zinnia/status.h>
 #include <kernel/compiler.h>
 

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <bits/irq.h>
 #include <kernel/compiler.h>
 #include <kernel/list.h>
-#include <kernel/vector.h>
+#include <bits/irq.h>
 #include <stdint.h>
 
 enum irq_status : uint8_t {
@@ -56,4 +55,9 @@ static inline void irq_set_state(bool state) {
 // Don't use this function directly.
 static inline bool irq_get_state() {
     return arch_irq_get_state();
+}
+
+// Halts the CPU until an interrupt arrives.
+static inline void irq_wait() {
+    arch_irq_wait();
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <defs.h>
 #include <stdint.h>
+#include <x86_64/defs.h>
 
 static inline bool arch_irq_get_state() {
     uint64_t flags;
@@ -14,4 +14,8 @@ static inline void arch_irq_set_state(bool state) {
         asm volatile("sti");
     else
         asm volatile("cli");
+}
+
+static inline void arch_irq_wait() {
+    asm volatile("sti; hlt");
 }

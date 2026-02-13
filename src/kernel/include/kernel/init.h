@@ -11,7 +11,7 @@
 #define __initdata_sorted(name) __used, __section(".init.data." name)
 
 struct boot_file {
-    uint8_t* data;
+    phys_t data;
     size_t length;
     const char* path;
 };

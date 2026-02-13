@@ -1,10 +1,6 @@
 #ifndef ZINNIA_HANDLE_H
 #define ZINNIA_HANDLE_H
 
-#include <zinnia/rights.h>
-#include <zinnia/status.h>
-#include <zinnia/syscall_numbers.h>
-#include <zinnia/syscall_stubs.h>
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -17,6 +13,11 @@ typedef size_t zn_handle_t;
 #define ZN_HANDLE_INVALID ((zn_handle_t)(0))
 
 #ifndef __KERNEL__
+
+#include <zinnia/rights.h>
+#include <zinnia/status.h>
+#include <zinnia/syscall_numbers.h>
+#include <zinnia/syscall_stubs.h>
 
 // Checks an object handle for validity.
 static inline zn_status_t zn_handle_validate(zn_handle_t handle) {

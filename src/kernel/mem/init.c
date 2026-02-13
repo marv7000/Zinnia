@@ -1,5 +1,6 @@
 #include <kernel/assert.h>
 #include <kernel/common.h>
+#include <kernel/init.h>
 #include <kernel/mem.h>
 #include <kernel/panic.h>
 #include <kernel/print.h>
@@ -13,8 +14,9 @@ extern uint8_t __ld_data_start[];
 extern uint8_t __ld_data_end[];
 extern uint8_t __ld_kernel_start[];
 
-struct page_table mem_kernel_table = {0};
+struct page_table mem_pt_kernel = {0};
 
+[[__init]]
 void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t kernel_phys, virt_t tmp_hhdm) {
     // This function creates a kernel page table and initializes all memory managers.
 
@@ -59,13 +61,13 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
     // since we're likely going to map it at a different base address.
     mem_hhdm_base = tmp_hhdm;
 
-    ASSERT(mem_pt_new_kernel(&mem_kernel_table, 0) == 0, "Unable to allocate the kernel page table");
+    ASSERT(mem_pt_new_kernel(&mem_pt_kernel, 0) == 0, "Unable to allocate the kernel page table");
 
     // text
     kprintf("Mapping text segment at %p\n", __ld_text_start);
     for (uint8_t* p = __ld_text_start; p <= __ld_text_end; p += pgsz) {
         zn_status_t status = mem_pt_map(
-            &mem_kernel_table,
+            &mem_pt_kernel,
             (virt_t)p,
             (phys_t)(p - __ld_kernel_start + kernel_phys),
             PTE_READ | PTE_EXEC,
@@ -77,13 +79,8 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
     // rodata
     kprintf("Mapping rodata segment at %p\n", __ld_rodata_start);
     for (uint8_t* p = __ld_rodata_start; p < __ld_rodata_end; p += pgsz) {
-        zn_status_t status = mem_pt_map(
-            &mem_kernel_table,
-            (virt_t)p,
-            (phys_t)(p - __ld_kernel_start + kernel_phys),
-            PTE_READ,
-            CACHE_NONE
-        );
+        zn_status_t status =
+            mem_pt_map(&mem_pt_kernel, (virt_t)p, (phys_t)(p - __ld_kernel_start + kernel_phys), PTE_READ, CACHE_NONE);
         ASSERT(!status, "Failed to map %p with error %i", p, status);
     }
 
@@ -91,7 +88,7 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
     kprintf("Mapping data segment at %p\n", __ld_data_start);
     for (uint8_t* p = __ld_data_start; p < __ld_data_end; p += pgsz) {
         zn_status_t status = mem_pt_map(
-            &mem_kernel_table,
+            &mem_pt_kernel,
             (virt_t)p,
             (phys_t)(p - __ld_kernel_start + kernel_phys),
             PTE_READ | PTE_WRITE,
@@ -114,14 +111,14 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
         for (size_t p = 0; p <= map[i].length; p += pgsz) {
             virt_t vaddr = (virt_t)(map[i].address + p + tmp_hhdm);
             phys_t paddr = (phys_t)(map[i].address + p);
-            zn_status_t status = mem_pt_map(&mem_kernel_table, vaddr, paddr, PTE_READ | PTE_WRITE, CACHE_NONE);
+            zn_status_t status = mem_pt_map(&mem_pt_kernel, vaddr, paddr, PTE_READ | PTE_WRITE, CACHE_NONE);
             ASSERT(!status, "Failed to map HHDM page %p to %p with error %i", (void*)vaddr, (void*)paddr, status);
         }
     }
     mem_hhdm_base = tmp_hhdm;
 
     // Switch to our own page table.
-    mem_pt_set(&mem_kernel_table);
+    mem_pt_set(&mem_pt_kernel);
 
     // We record metadata for every single page of available memory in a large array.
     // This array is contiguous in virtual memory, but is sparsely populated.
@@ -136,7 +133,7 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
         for (size_t page = 0; page < length; page += pgsz) {
             phys_t paddr;
             ASSERT(!mem_phys_alloc(1, 0, &paddr), "Failed to allocate memory for PFNDB!");
-            mem_pt_map(&mem_kernel_table, vaddr + page, paddr, PTE_READ | PTE_WRITE, CACHE_NONE);
+            mem_pt_map(&mem_pt_kernel, vaddr + page, paddr, PTE_READ | PTE_WRITE, CACHE_NONE);
         }
     }
     mem_pfndb = (struct page*)mem_pfndb_addr();
@@ -144,6 +141,8 @@ void mem_init(struct phys_mem* map, size_t map_len, virt_t kernel_virt, phys_t k
     // We don't need the bootstrap allocator from this point on.
     // Initialize the real page allocator.
     mem_phys_init(map, map_len);
+
+    slab_init();
 
     kprintf("Memory initialization complete\n");
 }

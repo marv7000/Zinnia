@@ -7,6 +7,7 @@
 #include <kernel/mem.h>
 #include <kernel/percpu.h>
 #include <kernel/print.h>
+#include <kernel/sched.h>
 #include <config.h>
 
 static const char zinnia_banner[] =
@@ -30,9 +31,10 @@ void kernel_main(struct boot_info* info) {
     mem_init(info->mem_map, info->num_mem_maps, info->virt_base, info->phys_base, info->hhdm_base);
 
     sched_init();
-    irq_unlock();
 
-    while (1) {}
+    irq_unlock();
+    sched_reschedule(&percpu_get()->sched);
+    ASSERT(false, "Nothing to do!");
 }
 
 [[noreturn]]

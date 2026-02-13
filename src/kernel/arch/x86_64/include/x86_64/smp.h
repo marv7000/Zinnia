@@ -13,11 +13,11 @@
 
 #ifndef __ASSEMBLER__
 
-#include <gdt.h>
 #include <kernel/common.h>
 #include <kernel/compiler.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <x86_64/gdt.h>
 
 struct [[__packed]] smp_info {
     struct gdt gdt;

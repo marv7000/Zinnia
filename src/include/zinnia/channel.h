@@ -1,11 +1,6 @@
 #ifndef ZINNIA_CHANNEL_H
 #define ZINNIA_CHANNEL_H
 
-#include <zinnia/handle.h>
-#include <zinnia/status.h>
-#include <zinnia/syscall_stubs.h>
-#include <stddef.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,6 +11,11 @@ enum zn_channel_flags {
 };
 
 #ifndef __KERNEL__
+
+#include <zinnia/handle.h>
+#include <zinnia/status.h>
+#include <zinnia/syscall_stubs.h>
+#include <stddef.h>
 
 // Creates a new channel.
 static inline zn_status_t zn_channel_create(

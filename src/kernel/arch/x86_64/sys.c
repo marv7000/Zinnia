@@ -3,9 +3,9 @@
 #include <kernel/compiler.h>
 #include <kernel/init.h>
 #include <kernel/percpu.h>
-#include <gdt.h>
-#include "asm.h"
-#include "defs.h"
+#include <x86_64/asm.h>
+#include <x86_64/defs.h>
+#include <x86_64/gdt.h>
 
 [[__init, __naked]]
 void _start() {

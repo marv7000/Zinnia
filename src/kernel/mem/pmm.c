@@ -113,7 +113,7 @@ static zn_status_t freelist_alloc(size_t num_pages, enum alloc_flags flags, phys
 success:
     // If the NOZERO flag is *not* specified, zero memory.
     if (__likely(out) && __likely(!(flags & ALLOC_NOZERO))) {
-        memcpy(HHDM_PTR(*out), 0, bytes);
+        memset(HHDM_PTR(*out), 0, bytes);
     }
     pmm_total_free -= num_pages;
     spin_unlock(&pmm_lock);

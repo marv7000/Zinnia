@@ -1,5 +1,5 @@
-#include <smp.h>
-#include <defs.h>
+#include <x86_64/smp.h>
+#include <x86_64/defs.h>
 
 .intel_syntax noprefix
 

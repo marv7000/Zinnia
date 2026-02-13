@@ -1,22 +1,23 @@
 #pragma once
 
+#include <zinnia/channel.h>
+#include <zinnia/handle.h>
 #include <zinnia/status.h>
+#include <zinnia/system.h>
 #include <kernel/compiler.h>
 #include <kernel/types.h>
 #include <stddef.h>
 #include <stdint.h>
 
-zn_status_t syscall_dispatch(reg_t num, reg_t a0, reg_t a1, reg_t a2, reg_t a3, reg_t a4, reg_t a5);
-
-[[noreturn]]
-void syscall_panic(zn_status_t err);
+zn_status_t syscall_dispatch(reg_t a0, reg_t a1, reg_t a2, reg_t a3, reg_t a4, reg_t a5, reg_t num);
 
 zn_status_t syscall_log(__user const char* msg, size_t len);
 
 zn_status_t syscall_archctl(uint32_t op, size_t value);
 
-// Channel
-#include <zinnia/channel.h>
+zn_status_t syscall_random_bytes(__user void* addr, size_t len);
+
+zn_status_t syscall_page_size(__user size_t* out);
 
 zn_status_t syscall_channel_create(
     enum zn_channel_flags flags,

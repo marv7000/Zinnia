@@ -2,7 +2,7 @@
 
 #include <kernel/compiler.h>
 #include <stdint.h>
-#include "tss.h"
+#include <x86_64/tss.h>
 
 struct [[__packed]] gdt {
     uint64_t null;

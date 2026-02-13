@@ -1,13 +1,28 @@
 #ifndef ZINNIA_SYSCALL_STUBS_H
 #define ZINNIA_SYSCALL_STUBS_H
 
-#include <zinnia/status.h>
-#include <zinnia/syscall_numbers.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifdef __x86_64__
+typedef uint64_t zn_arg_t;
+#elif defined(__aarch64__)
+typedef uint64_t zn_arg_t;
+#elif defined(__riscv) && (__riscv_xlen == 64)
+typedef uint64_t zn_arg_t;
+#elif defined(__loongarch64)
+typedef uint64_t zn_arg_t;
+#else
+#error "Unsupported architecture!"
+#endif
+
+#ifndef __KERNEL__
+
+#include <zinnia/status.h>
+#include <zinnia/syscall_numbers.h>
 
 #ifdef __x86_64__
 #define ASM_REG_NUM "rax"
@@ -20,7 +35,6 @@ extern "C" {
 #define ASM_REG_A5  "r10"
 #define ASM_SYSCALL "syscall"
 #define ASM_CLOBBER "rcx", "r11"
-typedef uint64_t zn_arg_t;
 #elif defined(__aarch64__)
 #define ASM_REG_NUM "x8"
 #define ASM_REG_RET "x0"
@@ -32,7 +46,6 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A5  "x5"
 #define ASM_SYSCALL "svc 0"
 #define ASM_CLOBBER
-typedef uint64_t zn_arg_t;
 #elif defined(__riscv) && (__riscv_xlen == 64)
 #define ASM_REG_NUM "a7"
 #define ASM_REG_RET "a0"
@@ -44,7 +57,6 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A5  "a5"
 #define ASM_SYSCALL "ecall"
 #define ASM_CLOBBER
-typedef uint64_t zn_arg_t;
 #elif defined(__loongarch64)
 #define ASM_REG_NUM "a7"
 #define ASM_REG_RET "a0"
@@ -56,12 +68,9 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A5  "a5"
 #define ASM_SYSCALL "syscall 0"
 #define ASM_CLOBBER
-typedef uint64_t zn_arg_t;
 #else
 #error "Unsupported architecture!"
 #endif
-
-#ifndef __KERNEL__
 
 static inline zn_status_t zn_syscall0(zn_syscall_t num) {
     register zn_syscall_t rnum asm(ASM_REG_NUM) = num;

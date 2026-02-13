@@ -8,4 +8,5 @@ kernel_sources += files(
     'print.c',
     'sched.c',
     'spin.c',
+    'universe.c',
 )

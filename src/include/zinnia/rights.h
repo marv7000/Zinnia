@@ -14,7 +14,7 @@ typedef enum {
     ZN_RIGHT_EXECUTE = 1u << 2,
     // Can be mapped in an address space.
     ZN_RIGHT_MAP = 1u << 3,
-    // Can be moved to another process.
+    // Can be moved to another universe.
     ZN_RIGHT_MOVE = 1u << 4,
     // Can be cloned.
     ZN_RIGHT_CLONE = 1u << 5,

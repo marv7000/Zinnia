@@ -13,7 +13,7 @@ Currently supported are GCC and Clang toolchains. You can find the code in `src/
 
 To configure, run:
 ```sh
-meson setup $build_dir
+meson setup -Dbuild_kernel=true -Dbuild_servers=true $build_dir
 ```
 
 And to build:
@@ -29,11 +29,11 @@ To cross-compile, you should follow the Meson cross-compilation guide.
 - `xbstrap` (via pip or from [source](https://github.com/managarm/xbstrap))
 - `xbps`
 
+### Building with a Docker container
+
 Create a new directory, e.g. `build-x86_64` and change your working directory to it. Don't leave this directory.
 
 Create a file named `bootstrap-site.yml` with the following contents (where `$ARCH` is the target architecture):
-
-### Building with Docker
 
 ```yaml
 define_options:
@@ -71,8 +71,8 @@ xbstrap build --all
 # Create an empty image
 xbstrap run empty-image
 
-# Create an initrd from the built packages
-xbstrap run initrd
+# Create an initramfs
+xbstrap run make-initramfs
 
 # Copy everything into the image
 xbstrap run make-image

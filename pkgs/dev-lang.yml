@@ -25,6 +25,7 @@ sources:
 
 packages:
 - name: gcc
+  labels: [ broken ] # libs need fixing
   architecture: "@OPTION:arch@"
   from_source: gcc
   revision: 1
@@ -67,6 +68,7 @@ packages:
 
 - name: llvm
   architecture: "@OPTION:arch@"
+  labels: [ broken ] # libs need fixing
   from_source: llvm
   tools_required:
   - host-cmake

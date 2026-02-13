@@ -31,11 +31,9 @@ subdir('mem')
 subdir('core')
 subdir('syscalls')
 
-configure_file(configuration: common_cfg, output: 'config.h')
-
 executable(
     'zinnia',
-    include_directories: [common_includes, kernel_includes],
+    include_directories: [common_includes, kernel_includes, cfg_inc],
     c_args: kernel_c_args,
     link_args: kernel_link_args,
     link_depends: kernel_lds,

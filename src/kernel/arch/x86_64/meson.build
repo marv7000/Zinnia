@@ -6,6 +6,7 @@ kernel_c_args += [
 ]
 
 kernel_sources += files(
+    'apic.c',
     'gdt.c',
     'idt.c',
     'mem.c',

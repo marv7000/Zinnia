@@ -12,6 +12,8 @@ project(
 
 if get_option('headers_only')
     install_subdir('include/zinnia', install_dir: get_option('includedir'))
+    pkg = import('pkgconfig')
+    pkg.generate(name: 'zinnia', description: 'Zinnia syscalls')
     subdir_done()
 endif
 
@@ -33,12 +35,13 @@ add_project_link_arguments(
 
 common_includes = include_directories('include')
 
-# Config file
-common_cfg = configuration_data()
-common_cfg.set_quoted('ZINNIA_VERSION', meson.project_version())
-common_cfg.set_quoted('ZINNIA_ARCH', target_machine.cpu_family())
-common_cfg.set_quoted('ZINNIA_COMPILER_ID', c_compiler.get_id() + ' ' + c_compiler.version())
-common_cfg.set_quoted('ZINNIA_LINKER_ID', c_compiler.get_linker_id())
+cfg = configuration_data()
+cfg.set_quoted('ZINNIA_VERSION', meson.project_version())
+cfg.set_quoted('ZINNIA_ARCH', target_machine.cpu_family())
+cfg.set_quoted('ZINNIA_COMPILER_ID', c_compiler.get_id() + ' ' + c_compiler.version())
+cfg.set_quoted('ZINNIA_LINKER_ID', c_compiler.get_linker_id())
+configure_file(configuration: cfg, output: 'config.h')
+cfg_inc = include_directories('.')
 
 if get_option('build_kernel')
     subdir('kernel')

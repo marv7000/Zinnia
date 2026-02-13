@@ -2,6 +2,16 @@
 
 #include <stdint.h>
 
+struct cpuid {
+    uint32_t eax, ebx, ecx, edx;
+};
+
+static inline struct cpuid asm_cpuid(uint32_t leaf, uint32_t subleaf) {
+    struct cpuid out = {0};
+    asm volatile("cpuid" : "=a"(out.eax), "=b"(out.ebx), "=c"(out.ecx), "=d"(out.edx) : "0"(leaf), "2"(subleaf));
+    return out;
+}
+
 static inline uint64_t asm_rdmsr(uint32_t msr) {
     uint32_t eax;
     uint32_t edx;

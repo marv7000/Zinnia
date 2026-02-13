@@ -3,7 +3,7 @@ sources:
   subdir: ports
   git: "https://github.com/marv7000/mlibc.git"
   branch: "zinnia"
-  commit: "9fa7bfc6143e30ad2dd33e70b740e1f759d56b60"
+  commit: "9d9b536c99de970b1de80e5694f9cf69956ed2e4"
   rolling_version: true
   version: "0.0pl@ROLLING_ID@"
 
@@ -65,6 +65,7 @@ packages:
     checksum: "blake2b:fe17cf0950f8ee2cc07bfa2b41e97f36a1832e396386cb94a55bede975dc974920578cf147b39eecbc5b53ff06fe0dc1fe781a4cab9bc9f767ea28c0e786422e"
     format: "tar.gz"
     version: "1.5.6"
+    extract_path: "zstd-1.5.6"
   revision: 1
   tools_required:
   - host-cmake
@@ -75,20 +76,22 @@ packages:
   configure:
   - args:
     - "cmake"
-    - "-DCMAKE_TOOLCHAIN_FILE=@SOURCE_ROOT@/support/CMakeToolchain-@OPTION:arch@.txt"
+    - "-DCMAKE_TOOLCHAIN_FILE=@BUILD_ROOT@/tools/host-cmake/CMakeToolchain.txt"
     - "-DCMAKE_BUILD_TYPE=Debug"
     - "-DCMAKE_INSTALL_PREFIX=/usr"
-    - "-DZSTD_ZLIB_SUPPORT=ON"
-    - "-DZSTD_LZMA_SUPPORT=ON"
-    - "-DZSTD_LZ4_SUPPORT=ON"
+    - "-DZSTD_ZLIB_SUPPORT=OFF"
+    - "-DZSTD_LZMA_SUPPORT=OFF"
+    - "-DZSTD_LZ4_SUPPORT=OFF"
     - "-DZSTD_BUILD_CONTRIB=OFF"
     - "-DZSTD_BUILD_STATIC=OFF"
     - "-DZSTD_BUILD_TESTS=OFF"
     - "-DZSTD_PROGRAMS_LINK_SHARED=ON"
-    - "@THIS_SOURCE_DIR@"
+    - "@THIS_SOURCE_DIR@/build/cmake"
   build:
   - args: [ "make", "-j@PARALLELISM@" ]
   - args: [ "make", "-j@PARALLELISM@", "install" ]
+    environ:
+      DESTDIR: "@THIS_COLLECT_DIR@"
 
 - name: mpfr
   architecture: "@OPTION:arch@"
@@ -186,6 +189,8 @@ packages:
     - "--host=@OPTION:arch@-@OPTION:triple@"
     - "--prefix=/usr"
     - "--enable-cxx"
+    environ:
+      CFLAGS: -std=gnu17
   build:
   - args: [ "make", "-j@PARALLELISM@" ]
   - args: [ "make", "install" ]

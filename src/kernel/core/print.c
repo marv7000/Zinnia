@@ -83,7 +83,7 @@ char* lutoa(uint64_t value, char* str, int base) {
 
 typedef void (*log_fn_t)(void* ctx, const char* buf, size_t len);
 
-static void kvprintf(log_fn_t callback, void* ctx, const char* restrict fmt, va_list args) {
+static void do_print(log_fn_t callback, void* ctx, const char* restrict fmt, va_list args) {
     // Amount of bytes written.
     int32_t written = 0;
 
@@ -366,7 +366,11 @@ void kprintf(const char* message, ...) {
     va_list args;
     va_start(args, message);
 
-    kvprintf(printf_console, nullptr, message, args);
+    do_print(printf_console, nullptr, message, args);
 
     va_end(args);
+}
+
+void kvprintf(const char* message, va_list args) {
+    do_print(printf_console, nullptr, message, args);
 }

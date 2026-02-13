@@ -1,10 +1,10 @@
 #include <kernel/percpu.h>
 #include <kernel/syscalls.h>
-#include <asm.h>
-#include <defs.h>
-#include <gdt.h>
 #include <stddef.h>
 #include <string.h>
+#include <x86_64/asm.h>
+#include <x86_64/defs.h>
+#include <x86_64/gdt.h>
 
 struct gdt main_gdt = {
     .null = 0,

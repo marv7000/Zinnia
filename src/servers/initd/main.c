@@ -1,8 +1,7 @@
 #include <zinnia/channel.h>
 #include <zinnia/handle.h>
-#include <zinnia/log.h>
 #include <zinnia/status.h>
-#include <libzinnia/status.h>
+#include <zinnia/system.h>
 
 int main() {
     zn_log("Hello, init world!\n");

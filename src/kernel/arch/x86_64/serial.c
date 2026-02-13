@@ -1,6 +1,6 @@
-#include <asm.h>
 #include <kernel/console.h>
 #include <stdint.h>
+#include <x86_64/asm.h>
 
 constexpr uint16_t COM1_BASE = 0x3F8;
 
