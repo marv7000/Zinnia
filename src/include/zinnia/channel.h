@@ -53,9 +53,9 @@ static inline zn_status_t zn_channel_read(
     size_t num_handles,
     size_t num_bytes,
     size_t* read_handles,
-    size_t* read_bytes,
+    size_t* read_bytes
 ) {
-    return zn_syscall6(
+    return zn_syscall7(
         (zn_arg_t)channel,
         (zn_arg_t)handles,
         (zn_arg_t)bytes,

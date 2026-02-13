@@ -33,6 +33,8 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A3  "r9"
 #define ASM_REG_A4  "r8"
 #define ASM_REG_A5  "r10"
+#define ASM_REG_A6  "r12"
+#define ASM_REG_A7  "r13"
 #define ASM_SYSCALL "syscall"
 #define ASM_CLOBBER "rcx", "r11"
 #elif defined(__aarch64__)
@@ -44,10 +46,12 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A3  "x3"
 #define ASM_REG_A4  "x4"
 #define ASM_REG_A5  "x5"
+#define ASM_REG_A6  "x6"
+#define ASM_REG_A7  "x7"
 #define ASM_SYSCALL "svc 0"
 #define ASM_CLOBBER
 #elif defined(__riscv) && (__riscv_xlen == 64)
-#define ASM_REG_NUM "a7"
+#define ASM_REG_NUM "t3"
 #define ASM_REG_RET "a0"
 #define ASM_REG_A0  "a0"
 #define ASM_REG_A1  "a1"
@@ -55,6 +59,8 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A3  "a3"
 #define ASM_REG_A4  "a4"
 #define ASM_REG_A5  "a5"
+#define ASM_REG_A5  "a6"
+#define ASM_REG_A5  "a7"
 #define ASM_SYSCALL "ecall"
 #define ASM_CLOBBER
 #elif defined(__loongarch64)
@@ -66,6 +72,8 @@ typedef uint64_t zn_arg_t;
 #define ASM_REG_A3  "a3"
 #define ASM_REG_A4  "a4"
 #define ASM_REG_A5  "a5"
+#define ASM_REG_A6  TODO
+#define ASM_REG_A7  TODO
 #define ASM_SYSCALL "syscall 0"
 #define ASM_CLOBBER
 #else
@@ -159,6 +167,60 @@ static inline zn_status_t zn_syscall6(
     asm volatile(ASM_SYSCALL
                  : "=r"(value)
                  : "r"(rnum), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5)
+                 : "memory", ASM_CLOBBER);
+    return value;
+}
+
+static inline zn_status_t zn_syscall7(
+    zn_arg_t a0,
+    zn_arg_t a1,
+    zn_arg_t a2,
+    zn_arg_t a3,
+    zn_arg_t a4,
+    zn_arg_t a5,
+    zn_arg_t a6,
+    zn_syscall_t num
+) {
+    register zn_syscall_t rnum asm(ASM_REG_NUM) = num;
+    register zn_status_t value asm(ASM_REG_RET);
+    register zn_arg_t r0 asm(ASM_REG_A0) = a0;
+    register zn_arg_t r1 asm(ASM_REG_A1) = a1;
+    register zn_arg_t r2 asm(ASM_REG_A2) = a2;
+    register zn_arg_t r3 asm(ASM_REG_A3) = a3;
+    register zn_arg_t r4 asm(ASM_REG_A4) = a4;
+    register zn_arg_t r5 asm(ASM_REG_A5) = a5;
+    register zn_arg_t r6 asm(ASM_REG_A6) = a6;
+    asm volatile(ASM_SYSCALL
+                 : "=r"(value)
+                 : "r"(rnum), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6)
+                 : "memory", ASM_CLOBBER);
+    return value;
+}
+
+static inline zn_status_t zn_syscall8(
+    zn_arg_t a0,
+    zn_arg_t a1,
+    zn_arg_t a2,
+    zn_arg_t a3,
+    zn_arg_t a4,
+    zn_arg_t a5,
+    zn_arg_t a6,
+    zn_arg_t a7,
+    zn_syscall_t num
+) {
+    register zn_syscall_t rnum asm(ASM_REG_NUM) = num;
+    register zn_status_t value asm(ASM_REG_RET);
+    register zn_arg_t r0 asm(ASM_REG_A0) = a0;
+    register zn_arg_t r1 asm(ASM_REG_A1) = a1;
+    register zn_arg_t r2 asm(ASM_REG_A2) = a2;
+    register zn_arg_t r3 asm(ASM_REG_A3) = a3;
+    register zn_arg_t r4 asm(ASM_REG_A4) = a4;
+    register zn_arg_t r5 asm(ASM_REG_A5) = a5;
+    register zn_arg_t r6 asm(ASM_REG_A6) = a6;
+    register zn_arg_t r7 asm(ASM_REG_A7) = a7;
+    asm volatile(ASM_SYSCALL
+                 : "=r"(value)
+                 : "r"(rnum), "r"(r0), "r"(r1), "r"(r2), "r"(r3), "r"(r4), "r"(r5), "r"(r6), "r"(r7)
                  : "memory", ASM_CLOBBER);
     return value;
 }

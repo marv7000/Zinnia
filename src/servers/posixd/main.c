@@ -8,11 +8,5 @@ int main() {
 
     zn_status_t e;
 
-    // Open a connection to the init server.
-    zn_handle_t* handles;
-    void* data;
-    if ((e = zn_channel_open(ZN_HANDLE_INVALID, 32, 4096, &handles, &data)))
-        return e;
-
     while (1) {}
 }
